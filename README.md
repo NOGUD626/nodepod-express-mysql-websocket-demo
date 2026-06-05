@@ -26,6 +26,16 @@
 | JSON 型カラム + `JSON_EXTRACT` | ✅ |
 | prepared statement（execute / 文字列・**数値**パラメータ） | ✅ |
 
+## スクリーンショット
+
+ブラウザのタブ内で NodePod を起動し、`/api/db` を叩いた様子（左下＝結果 JSON、右下＝ブラウザ内 Express の iframe プレビュー）。
+
+![/api/db の結果](docs/screenshot-db.png)
+
+トランザクション / JSON 型 / prepared statement（`/api/db-advanced`）。
+
+![/api/db-advanced の結果](docs/screenshot-advanced.png)
+
 ## アーキテクチャ
 
 ```

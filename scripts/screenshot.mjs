@@ -1,13 +1,13 @@
 /**
  * デモを自動操作してスクリーンショットを docs/ に保存する。
  *
- * 事前に dev サーバーを起動しておくこと:
- *   npm run dev      （別ターミナルで）
+ * 事前に起動しておくこと（別ターミナル）:
+ *   npm run db:up && npm run proxy && npm run dev
  * その後:
  *   npm run screenshot
  *
  * ※ ヘッドレスは新規プロファイル = IndexedDB キャッシュが空なので、
- *    初回の npm install に最大 2 分程度かかる（待機を長めに取ってある）。
+ *    初回の npm install に最大 4 分程度かかる（待機を長めに取ってある）。
  */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +25,7 @@ const shot = (page, name) =>
 
 const browser = await chromium.launch({ headless: true });
 try {
-  const page = await browser.newPage({ viewport: { width: 1680, height: 1000 } });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 1100 } });
   page.on('console', (m) => console.log('  [page]', m.text()));
 
   console.log('→ open ' + URL);
@@ -40,31 +40,24 @@ try {
   await shot(page, 'screenshot-ready.png');
   console.log('  saved docs/screenshot-ready.png');
 
-  console.log('→ /api/catfact ...');
-  await page.click('button.api[data-path="/api/catfact"]');
-  await page.waitForFunction(
-    () => {
-      const t = document.querySelector('#result')?.textContent || '';
-      return t.includes('/api/catfact') && t.includes('HTTP');
-    },
-    { timeout: 30000 },
-  );
-  await page.waitForTimeout(800);
-  await shot(page, 'screenshot-catfact.png');
-  console.log('  saved docs/screenshot-catfact.png');
+  const capture = async (apiPath, file) => {
+    console.log('→ ' + apiPath + ' ...');
+    await page.click('button.api[data-path="' + apiPath + '"]');
+    await page.waitForFunction(
+      (p) => {
+        const t = document.querySelector('#result')?.textContent || '';
+        return t.includes(p) && t.includes('HTTP');
+      },
+      apiPath,
+      { timeout: 60000 },
+    );
+    await page.waitForTimeout(800);
+    await shot(page, file);
+    console.log('  saved docs/' + file);
+  };
 
-  console.log('→ /api/blocked ...');
-  await page.click('button.api[data-path="/api/blocked"]');
-  await page.waitForFunction(
-    () => {
-      const t = document.querySelector('#result')?.textContent || '';
-      return t.includes('/api/blocked') && t.includes('HTTP');
-    },
-    { timeout: 30000 },
-  );
-  await page.waitForTimeout(800);
-  await shot(page, 'screenshot-blocked.png');
-  console.log('  saved docs/screenshot-blocked.png');
+  await capture('/api/db', 'screenshot-db.png');
+  await capture('/api/db-advanced', 'screenshot-advanced.png');
 
   console.log('✓ done');
 } catch (e) {
