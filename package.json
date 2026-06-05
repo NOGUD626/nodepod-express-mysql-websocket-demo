@@ -1,0 +1,23 @@
+{
+  "name": "nodepod-mysql-websocket-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "screenshot": "node scripts/screenshot.mjs",
+    "db:up": "docker compose -f docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f docker/docker-compose.yml down -v",
+    "proxy": "node proxy/proxy.mjs"
+  },
+  "dependencies": {
+    "@scelar/nodepod": "latest"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0",
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  }
+}

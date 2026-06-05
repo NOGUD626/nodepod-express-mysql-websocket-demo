@@ -1,0 +1,23 @@
+name: nodepod-express-mysql-websocket-demo
+
+services:
+  mysql:
+    image: mysql:8.0
+    # MySQL 8 既定の caching_sha2 ではなく native password にして、
+    # WebSocket トンネル越しの認証をシンプルにする（検証用）
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: demodb
+      MYSQL_USER: demo
+      MYSQL_PASSWORD: demopass
+    ports:
+      # ホスト側 3312 → コンテナ 3306（既存 MySQL と衝突しないよう 3312 に）
+      - "3312:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-prootpass"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
