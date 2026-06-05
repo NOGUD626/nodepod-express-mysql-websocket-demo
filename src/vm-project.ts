@@ -426,7 +426,7 @@ app.get('/api/db-advanced', async (req, res) => {
     // --- JSON 型カラム ---
     await conn.query('CREATE TABLE IF NOT EXISTS profiles (id INT AUTO_INCREMENT PRIMARY KEY, data JSON)');
     await conn.query('DELETE FROM profiles');
-    const payload = { name: '野口', tags: ['wasm', 'mysql'], nested: { ok: true, n: 42 } };
+    const payload = { name: 'NOGU', tags: ['wasm', 'mysql'], nested: { ok: true, n: 42 } };
     // prepared statement(execute) + JSON 値のバインド
     await conn.execute('INSERT INTO profiles (data) VALUES (?)', [JSON.stringify(payload)]);
     const [jrows] = await conn.execute(
